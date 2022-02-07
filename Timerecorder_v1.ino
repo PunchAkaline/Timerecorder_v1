@@ -1,3 +1,4 @@
+//コメント20210207
 #include <M5Stack.h>
 #include <WiFi.h>
 #include <driver/adc.h>
