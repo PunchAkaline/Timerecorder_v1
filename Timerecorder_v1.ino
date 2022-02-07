@@ -8,7 +8,7 @@
 
 const char *ssid = "TLAB_Wi-Fi";
 const char *password = "#u,3jcdXJ~SS";
-const char* published_url = "https://script.google.com/macros/s/AKfycbxhIoNO-uY6tIQ5g6g5phrAlaQ8q6kMyr17IKkWw5G7ofbxxXWV/exec";
+const char* published_url = "https://script.google.com/macros/s/AKfycbzPWGqKPYhDg4e1eEvUNRJRvIUA3JJDprhiyiSCAfLO0mgrbXY/exec";
 uint8_t hh;
 uint8_t mm;
 uint8_t ss;
