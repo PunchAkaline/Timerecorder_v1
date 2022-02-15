@@ -238,10 +238,7 @@ void loop() {
     //delay(100);
     //M5.Speaker.tone(440, 100);
     num++;
-    if(num==11)
-    {
-      num=-1;
-    }
+
     //画面の初期化
     M5.Lcd.fillRect(0, 0, 320, 70,BLACK); // 塗りつぶし left, top, witdh, height
     M5.Lcd.setTextSize(4);
@@ -250,6 +247,10 @@ void loop() {
     M5.Lcd.print(name[num]);
     M5.Lcd.setTextColor(TFT_YELLOW, TFT_BLACK);
     M5.Lcd.setTextSize(1); 
+    if(num==11)
+    {
+      num=-1;
+    }
   }
 
   M5.update();  // ボタン操作の状況を読み込む関数(ボタン操作を行う際は必須)
