@@ -6,9 +6,11 @@
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
 
+//ssid,パスワード,googleスプレッドシートのデプロイされたurlを設定
 const char *ssid = "TLAB_Wi-Fi";
 const char *password = "#u,3jcdXJ~SS";
 const char* published_url = "https://script.google.com/macros/s/AKfycbzPWGqKPYhDg4e1eEvUNRJRvIUA3JJDprhiyiSCAfLO0mgrbXY/exec";
+
 uint8_t hh;
 uint8_t mm;
 uint8_t ss;
@@ -22,10 +24,36 @@ String name[] = {"Boss","Asai","Saito","Takahashi","Fujimoto","Ikuta","Ota","Fuk
 int num=0;
 char s[20];
 
+
+void setup_wifi(){
+  
+  Serial.println("Connecting to ");
+  Serial.print(ssid);
+
+  // WiFi接続性改善のため、いったん切断
+  WiFi.disconnect();
+  delay(500);
+
+  // WiFi開始
+  WiFi.begin(ssid, password);
+ 
+  // Wi-Fi接続待ち
+  while (WiFi.status() != WL_CONNECTED){
+    delay(500);
+    Serial.println(".");
+  }
+  // WiFi接続成功メッセージの表示
+  Serial.println("\nWiFi Connected.");
+}
+
 void setup(void) {
   adc_power_acquire(); // ADC Power ON
+
   M5.begin();
+
   while (!Serial) continue;
+
+  //画面設定
   M5.Lcd.fillScreen(TFT_BLACK);
   M5.Lcd.setTextSize(4);
   M5.Lcd.setBrightness(10);
@@ -44,19 +72,21 @@ void setup(void) {
   M5.Lcd.print("Name");
   M5.Lcd.setTextColor(TFT_YELLOW, TFT_BLACK);
   M5.Lcd.setTextSize(1);
-  M5.Speaker.setVolume(1);
-  WiFi.mode(WIFI_STA);
-  WiFi.disconnect();
-  if(WiFi.begin(ssid, password) != WL_DISCONNECTED) {
-    ESP.restart();
-  }
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(1000);
-  }
+  M5.Speaker.setVolume(1);//音量
+  
+  // Wi-Fi処理の開始
+  setup_wifi();
+  
+  //時間取得の処理
   configTime(9*3600L,0,"ntp.nict.jp","time.google.com","ntp.jst.mfeed.ad.jp");
 }
 
+void bottun(){
+  
+}
+
 void loop() {
+  //時計の処理
   getLocalTime(&timeInfo);
   hh = timeInfo.tm_hour;
   mm = timeInfo.tm_min;
@@ -86,6 +116,8 @@ void loop() {
       M5.Lcd.drawNumber(ss, xpos, ysecs, 6);
     }
   }
+
+ //ボタンの処理
     // Aボタンが押されたら
   if(M5.BtnA.wasPressed())
   {
@@ -119,26 +151,25 @@ void loop() {
     int httpCode = http.POST(pubMessage);
    
     if(httpCode > 0){
-      //M5.Lcd.printf(" HTTP Response:%d\n", httpCode);
-   
       if(httpCode == HTTP_CODE_OK){
-        //M5.Lcd.println(" HTTP Success!!");
+        Serial.println(" HTTP Success!!");
         String payload = http.getString();
         Serial.println(payload);
       }
     }else{
-      //M5.Lcd.println(" FAILED");
+      Serial.println(" FAILED");
       Serial.printf("　HTTP　failed,error: %s\n", http.errorToString(httpCode).c_str());
     }
    
     http.end();
+    //画面の初期化
     M5.Lcd.fillRect(0, 0, 320, 70,BLACK); // 塗りつぶし left, top, witdh, height
     M5.Lcd.setTextSize(4);
     M5.Lcd.setTextColor(TFT_WHITE,TFT_BLACK);
     M5.Lcd.setCursor(0, 20);
     M5.Lcd.print(name[num]);
     M5.Lcd.setTextColor(TFT_YELLOW, TFT_BLACK);
-    M5.Lcd.setTextSize(1);
+    M5.Lcd.setTextSize(1); 
   }
 
   // Bボタンが押されたら
@@ -173,27 +204,25 @@ void loop() {
     int httpCode = http.POST(pubMessage);
    
     if(httpCode > 0){
-      //M5.Lcd.printf(" HTTP Response:%d\n", httpCode);
-   
       if(httpCode == HTTP_CODE_OK){
-        //M5.Lcd.println(" HTTP Success!!");
+        Serial.println(" HTTP Success!!");
         String payload = http.getString();
         Serial.println(payload);
       }
     }else{
-      //M5.Lcd.println(" FAILED");
+      Serial.println(" FAILED");
       Serial.printf("　HTTP　failed,error: %s\n", http.errorToString(httpCode).c_str());
     }
    
     http.end();
+    //画面の初期化
     M5.Lcd.fillRect(0, 0, 320, 70,BLACK); // 塗りつぶし left, top, witdh, height
     M5.Lcd.setTextSize(4);
     M5.Lcd.setTextColor(TFT_WHITE,TFT_BLACK);
     M5.Lcd.setCursor(0, 20);
     M5.Lcd.print(name[num]);
     M5.Lcd.setTextColor(TFT_YELLOW, TFT_BLACK);
-    M5.Lcd.setTextSize(1);
-    
+    M5.Lcd.setTextSize(1);  
   }
 
   // Cボタンが押されたら
@@ -209,17 +238,19 @@ void loop() {
     //delay(100);
     //M5.Speaker.tone(440, 100);
     num++;
+    if(num==11)
+    {
+      num=-1;
+    }
+    //画面の初期化
     M5.Lcd.fillRect(0, 0, 320, 70,BLACK); // 塗りつぶし left, top, witdh, height
     M5.Lcd.setTextSize(4);
     M5.Lcd.setTextColor(TFT_WHITE,TFT_BLACK);
     M5.Lcd.setCursor(0, 20);
     M5.Lcd.print(name[num]);
     M5.Lcd.setTextColor(TFT_YELLOW, TFT_BLACK);
-    M5.Lcd.setTextSize(1);
-    if(num==11)
-    {
-      num=-1;
-    } 
+    M5.Lcd.setTextSize(1); 
   }
+
   M5.update();  // ボタン操作の状況を読み込む関数(ボタン操作を行う際は必須)
 }
