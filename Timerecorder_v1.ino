@@ -115,6 +115,12 @@ void loop() {
       if (ss < 10) xpos += M5.Lcd.drawChar('0', xpos, ysecs, 6);
       M5.Lcd.drawNumber(ss, xpos, ysecs, 6);
     }
+    //1時間ごとに再起動の処理
+    if (omm == 0){
+      if(oss==1){
+        M5.Power.reset();
+      }
+    }
   }
 
  //ボタンの処理
@@ -237,6 +243,10 @@ void loop() {
     //M5.Speaker.mute();
     //delay(100);
     //M5.Speaker.tone(440, 100);
+    if(num==11)
+    {
+      num=-1;
+    }
     num++;
 
     //画面の初期化
@@ -247,10 +257,7 @@ void loop() {
     M5.Lcd.print(name[num]);
     M5.Lcd.setTextColor(TFT_YELLOW, TFT_BLACK);
     M5.Lcd.setTextSize(1); 
-    if(num==11)
-    {
-      num=-1;
-    }
+
   }
 
   M5.update();  // ボタン操作の状況を読み込む関数(ボタン操作を行う際は必須)
